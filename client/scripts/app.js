@@ -11,10 +11,10 @@ $(function() {
     init: function() {
       app.username = window.location.search.substr(10);
       app.$main = $('#main');
-      app.$roomSelect = $('#room-select');
+      app.$roomSelect = $('#roomSelect');
       app.$text = $('#text');
       app.$send = $('#send');
-      app.$chatbox = $('#chatbox');
+      app.$chatbox = $('#chats');
 
       app.$roomSelect.on('change', app.saveRoom);
       app.$send.on('submit', app.handleSubmit);
