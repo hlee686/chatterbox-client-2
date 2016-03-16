@@ -17,6 +17,8 @@ $(function() {
       app.$chatbox = $('#chatbox');
 
       app.$roomSelect.on('change', app.saveRoom);
+      app.$send.on('submit', app.handleSubmit);
+      app.$main.on('click', '.username', app.addFriend);
 
       app.fetch();
 
@@ -160,6 +162,30 @@ $(function() {
       var $option = $('<option />').val(roomname).text(roomname);
 
       app.$roomSelect.append($option);
+    },
+
+    handleSubmit: function(event) {
+      event.preventDefault();
+
+      var message = {
+        username: app.username,
+        text: app.$text.val(),
+        roomname: app.room || 'lobby'
+      };
+
+      app.send(message);
+    },
+
+    addFriend: function(event) {
+      var username = $(event.currentTarget).attr('data-username');
+      if (username !== undefined) {
+        console.log('Addding %s as a friend', username);
+
+        app.friends[username] = true;
+
+        var selector = '[data-username="' + username.replace(/"/g, '\\\"') + '"]';
+        $(selector).addClass('friend');
+      }
     }
   };
 });
