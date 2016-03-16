@@ -1,84 +1,165 @@
 // YOUR CODE HERE:
+var app;
 
-  var server = 'https://api.parse.com/1/classes/chatterbox';
-  var database = [];
-  var timestamp = '2016-03-14T23:54:39.914Z';
+$(function() {
+  app = {
+    server: 'https://api.parse.com/1/classes/chatterbox',
+    username: 'natoen',
+    room: 'lobby',
+    friends: {},
 
+    init: function() {
+      app.username = window.location.search.substr(10);
+      app.$main = $('#main');
+      app.$roomSelect = $('#room-select');
+      app.$text = $('#text');
+      app.$send = $('#send');
+      app.$chatbox = $('#chatbox');
 
-  var postMsg = function(message) { 
-    $.ajax({
-      url: server,
-      type: 'POST',
-      data: JSON.stringify(message),
-      contentType: 'application/json',
-      success: function (data) {
-        console.log('chatterbox: Message sent. Data: ', data);
-      },
-      error: function (data) {
-        console.error('chatterbox: Failed to send message. Error: ', data);
+      app.$roomSelect.on('change', app.saveRoom);
+
+      app.fetch();
+
+      setInterval(app.fetch, 2000);
+    },
+
+    saveRoom: function(event) {
+      var selectedIndex = app.$roomSelect.prop('selectedIndex');
+
+      if (selectedIndex === 0) {
+        var roomname = prompt('Enter room name:');
+        if (roomname) {
+          app.room = roomname;
+          app.addRoom(roomname);
+          app.$roomSelect.val(roomname);
+          app.fetch();
+        }
+      } else {
+        app.room = app.$roomSelect.val();
+        app.fetch();
       }
-    });
-  };
+    },
 
-  var message = {
-    username: 'Julie Newmar',
-    text: 'I am Cat Woman, hisssss',
-    roomname: 'batman'
-  };
+    send: function(message) { 
+      app.startSpinner();
 
-  postMsg(message);
+      $.ajax({
+        url: app.server,
+        type: 'POST',
+        data: JSON.stringify(message),
+        contentType: 'application/json',
+        success: function (data) {
+          app.fetch();
+          console.log('chatterbox: Message sent. Data: ', data);
+        },
+        error: function (data) {
+          console.error('chatterbox: Failed to send message. Error: ', data);
+        },
+        complete: function() {
+          app.stopSpinner()     ;   
+        }   
+      });
+    },
+
+    fetch: function() { 
+      app.startSpinner();
+
+      $.ajax({
+        url: app.server, 
+        type: 'GET',
+        contentType: 'application/json',
+        data: { order: '-createdAt',  // ?order=-createdAt',
+                // where: { 
+                //   createdAt: { $gt: { __type: 'Date', iso: timestamp } } 
+                // }
+              },
+        success: function (data) {
+          app.populateRooms(data.results);
+          app.populateMessages(data.results);
+          console.log('chatterbox: Message retrieved. Data: ', data);
+        },
+        error: function (data) {
+          console.error('chatterbox: Failed to get data. Error: ', data);
+        },
+        complete: function() {
+          app.stopSpinner()     ;   
+        }          
+      });
+    },
+
+    startSpinner: function() {
+      $('.spinner').show();
+    },
+
+    stopSpinner: function() {
+      $('.spinner').hide();
+    },
+
+    populateRooms: function(results) {
+      app.$roomSelect.html('<option value="newroom">New Room..</option><option value="lobby" selected>Lobby</option>');
 
 
+      if(results) {
+        var processedRooms = {};
 
-  var getMsg = function(message) { 
-    $.ajax({
-      url: server, 
-      type: 'GET',
-      data: { order: '-createdAt',  // ?order=-createdAt',
-              where: { 
-                createdAt: { $gt: { __type: 'Date', iso: timestamp } } 
-              }
-            },            
-      contentType: 'application/json',
-      success: function (data) {
-        database = data.results.slice().concat(database);
-        timestamp = database[0].createdAt;
-        trytry();
-        console.log('chatterbox: Message retrieved. Data: ', data);
-      },
-      error: function (data) {
-        console.error('chatterbox: Failed to get data. Error: ', data);
+        if (app.room !== 'lobby') {
+          app.addRoom(app.room);
+          processedRooms[app.room] = true;
+        }
+        
+        results.forEach(function(data){
+          var roomname = data.roomname;
+          if (roomname && !processedRooms[roomname]) {
+            app.addRoom(roomname);
+            processedRooms[roomname] = true;
+          }
+        });
       }
-    });
-  };
 
-  getMsg();
+      app.$roomSelect.val(app.room);
+    },
 
-  var roomlist = {};
+    populateMessages: function(results) {
+      app.clearMessages();
 
-  var trytry = function() {
-    for (var i = 0; i < database.length; i++) {
-      roomlist[database[i].roomname] = null;
+      if(Array.isArray(results)) {
+        results.forEach(app.addMessage);
+      }
+    },
+
+    clearMessages: function(){
+      app.$chatbox.html('');
+    },
+
+    addMessage: function(data) {
+      if (!data.roomname) {
+        data.roomname = 'lobby';
+      }
+
+      if (data.roomname === app.room) {
+        var $chatbox = $('<div class="chatbox" />');
+        var $username = $('<span class="username" />');
+        $username.text(data.username + ': ')
+          .attr('data-username', data.username)
+          .attr('data-roomname', data.roomname)
+          .appendTo($chatbox);
+
+        if (app.friends[data.username] === true) {
+          $username.addClass('friend');
+        }
+
+        var $text = $('<br /><span />');
+        $text.text(data.text)
+          .appendTo($chatbox);
+
+        app.$chatbox.append($chatbox);
+      }
+    },
+
+    addRoom: function(roomname) {
+      var $option = $('<option />').val(roomname).text(roomname);
+
+      app.$roomSelect.append($option);
     }
-    for (var key in roomlist) {
-      $('#room-select').append('<option value="' + key + '">' + key + '</option>');
-    }
   };
-
-  $('.submit').click(function(e) {
-    postMsg({
-      username: 'Julie Newmar',
-      text: $('.text').val(),
-      roomnaRme: 'batman'
-    });
-  });
-
-
-
-
-
-
-
-
-
-
+});
