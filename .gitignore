@@ -1,54 +1,12 @@
 ### OSX ###
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon
-/bower.json
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
-
-
-### Node ###
-lib-cov
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-
-pids
-logs
-results
-
-
-### NPM ###
-npm-debug.log
-node_modules
-
 
 ### Bower ###
-**/bower_components/
+client/bower_components/
+.bowerrc
+bower.json
 
-
-
-### PhPStorm ###
-.idea/
-
-# Floobits
-.floo
-.floobit
-.floo
-.flooignore
-
-
-## API keys
+### API keys ###
 client/env/config.js
 
 
