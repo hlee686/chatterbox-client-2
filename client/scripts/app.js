@@ -1,4 +1,3 @@
-// YOUR CODE HERE:
 var app;
 
 $(function() {
@@ -58,7 +57,7 @@ $(function() {
           console.error('chatterbox: Failed to send message. Error: ', data);
         },
         complete: function() {
-          app.stopSpinner()     ;   
+          app.stopSpinner();   
         }   
       });
     },
@@ -70,11 +69,10 @@ $(function() {
         url: app.server, 
         type: 'GET',
         contentType: 'application/json',
-        data: { order: '-createdAt',  // ?order=-createdAt',
-                // where: { 
-                //   createdAt: { $gt: { __type: 'Date', iso: timestamp } } 
-                // }
-              },
+        data: { order: '-createdAt' },  // ?order=-createdAt',
+          // where: { 
+          //   createdAt: { $gt: { __type: 'Date', iso: timestamp } } 
+          // }
         success: function (data) {
           app.populateRooms(data.results);
           app.populateMessages(data.results);
@@ -84,7 +82,7 @@ $(function() {
           console.error('chatterbox: Failed to get data. Error: ', data);
         },
         complete: function() {
-          app.stopSpinner()     ;   
+          app.stopSpinner();   
         }          
       });
     },
@@ -101,7 +99,7 @@ $(function() {
       app.$roomSelect.html('<option value="newroom">New Room..</option><option value="lobby" selected>Lobby</option>');
 
 
-      if(results) {
+      if (results) {
         var processedRooms = {};
 
         if (app.room !== 'lobby') {
@@ -109,7 +107,7 @@ $(function() {
           processedRooms[app.room] = true;
         }
         
-        results.forEach(function(data){
+        results.forEach(function(data) {
           var roomname = data.roomname;
           if (roomname && !processedRooms[roomname]) {
             app.addRoom(roomname);
@@ -124,12 +122,12 @@ $(function() {
     populateMessages: function(results) {
       app.clearMessages();
 
-      if(Array.isArray(results)) {
+      if (Array.isArray(results)) {
         results.forEach(app.addMessage);
       }
     },
 
-    clearMessages: function(){
+    clearMessages: function() {
       app.$chatbox.html('');
     },
 

@@ -1,27 +1,26 @@
 <!doctype html>
 <html>
   <head>
-    <meta charset="utf-8">
     <title>chatterbox</title>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="styles/styles.css">
-
     <!-- dependencies -->
     <script src="bower_components/jquery/jquery.min.js"></script>
     <script src="bower_components/underscore/underscore-min.js"></script>
-    <!-- your scripts -->
+    <!-- scripts -->
     <script src="env/config.js"></script>
     <script src="scripts/app.js"></script>
     <script> $(function() { app.init(); }); </script>
   </head>
+  
   <body>
     <div id="main">
       <h1>chatterbox</h1>
-      <!-- Your HTML goes here! -->
+      <!-- HTML -->
       <div class="spinner"><img src="images/spiffygif_46x46.gif" /></div>
       <div id="room">
         Room: 
-        <select id="roomSelect">
-        </select>
+        <select id="roomSelect"></select>
       </div>
       
       <form action="#" method="post" id="send">
