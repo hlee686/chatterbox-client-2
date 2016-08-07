@@ -178,7 +178,7 @@ $(function() {
     // We're just adding a class to highlight it blue and put it in an arrayDB
     addFriend: function(event) {
       var username = $(event.currentTarget).attr('data-username');
-
+      console.log(111111);
       if (username !== undefined) {
         app.friends[username] = true;
 
