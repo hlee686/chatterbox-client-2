@@ -13,7 +13,7 @@ $(function() {
       app.$roomSelect = $('#roomSelect');
       app.$text = $('#text');
       app.$send = $('#send');
-      app.$chatbox = $('#chats');
+      app.$chatbox = $('#chatbox');
 
       app.$roomSelect.on('change', app.saveRoom);
       app.$send.on('submit', app.handleSubmit);
@@ -43,6 +43,7 @@ $(function() {
 
     send: function(message) { 
       app.startSpinner();
+      app.$text.val('');
 
       $.ajax({
         url: app.server,
@@ -137,7 +138,7 @@ $(function() {
       }
 
       if (data.roomname === app.room) {
-        var $chatbox = $('<div class="chatbox" />');
+        var $chatbox = $('<div class="chat" />');
         var $username = $('<span class="username" />');
         $username.text(data.username + ': ')
           .attr('data-username', data.username)
@@ -174,11 +175,11 @@ $(function() {
       app.send(message);
     },
 
+    // We're just adding a class to highlight it blue and put it in an arrayDB
     addFriend: function(event) {
       var username = $(event.currentTarget).attr('data-username');
-      if (username !== undefined) {
-        console.log('Addding %s as a friend', username);
 
+      if (username !== undefined) {
         app.friends[username] = true;
 
         var selector = '[data-username="' + username.replace(/"/g, '\\\"') + '"]';
